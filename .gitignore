@@ -1,0 +1,12 @@
+# Các file rác của Java/Spring Boot
+target/
+*.class
+
+# Các file rác của Android/Kotlin
+.gradle/
+build/
+local.properties
+
+# Các file rác của ESP32 (PlatformIO/Arduino)
+.pio/
+.vscode/ 
