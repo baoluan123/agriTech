@@ -1,0 +1,87 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TẠO TÀI KHOẢN"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="20dp"
+            android:textColor="@color/black"/>
+
+        <EditText
+            android:id="@+id/edtFullNameR"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:hint="Họ và tên"
+            android:background="@android:drawable/editbox_background"/>
+
+        <EditText
+            android:id="@+id/edtUsernameR"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:hint="Tên đăng nhập"
+            android:layout_marginTop="10dp"
+            android:background="@android:drawable/editbox_background"/>
+
+        <EditText
+            android:id="@+id/edtPasswordR"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:hint="Mật khẩu"
+            android:inputType="textPassword"
+            android:layout_marginTop="10dp"
+            android:background="@android:drawable/editbox_background"/>
+
+        <EditText
+            android:id="@+id/edtPhoneR"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:hint="Số điện thoại"
+            android:inputType="phone"
+            android:layout_marginTop="10dp"
+            android:background="@android:drawable/editbox_background"/>
+
+        <EditText
+            android:id="@+id/edtAddressR"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:hint="Địa chỉ vườn"
+            android:layout_marginTop="10dp"
+            android:background="@android:drawable/editbox_background"/>
+
+        <Button
+            android:id="@+id/btnRegister"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Đăng ký ngay"
+            android:layout_marginTop="20dp" />
+
+        <TextView
+            android:id="@+id/tvBackToLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đã có tài khoản? Đăng nhập"
+            android:layout_marginTop="15dp"
+            android:textColor="#007BFF"/>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</ScrollView>
