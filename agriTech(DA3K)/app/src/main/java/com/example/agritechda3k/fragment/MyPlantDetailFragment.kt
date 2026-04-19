@@ -5,12 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import com.bumptech.glide.Glide
 import com.example.agritechda3k.R
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import com.example.agritechda3k.databinding.FragmentMyPlantDetailBinding
+import com.example.agritechda3k.databinding.FragmentMyplantBinding
+import com.example.agritechda3k.viewmodel.PlantUserViewModel
 
 /**
  * A simple [Fragment] subclass.
@@ -18,43 +18,46 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class MyPlantDetailFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
+    private  var _binding: FragmentMyPlantDetailBinding? = null
+    private val binding get() = _binding!!
+    // Dùng chung ViewModel với Activity để lấy được selectedMyPlantId
+    private val viewModel: PlantUserViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_plant_detail, container, false)
+    ): View {
+        _binding = FragmentMyPlantDetailBinding.inflate(inflater, container, false)
+        return binding.root
     }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val selectId = viewModel.selectedMyPlantId
+        viewModel.getDetail(selectId).observe(viewLifecycleOwner) {
+            plant->
+            plant?.let {
+                binding.apply {
+                    tvCustomName.text = it.customName ?: it.plantName
+                    tvDescriptionPlant.text = "Giống cây: ${it.plantName}"
+                    tvLastWatered.text = it.lastWatered ?: "Chưa có dữ liệu"
+                    tvFertilizerInfo.text = it.fertilizerInfo ?: "Chưa cập nhật"
+                    // Các thông số fix cứng hoặc sau này lấy thêm từ DB
+                    tvWaterFrequency.text = "2 lần/tuần"
+                    tvIdealHumidity.text = "60% - 70%"
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MyPlantDetailFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MyPlantDetailFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+                    // Load ảnh "xịn"
+                    Glide.with(requireContext())
+                        .load(it.imageUrl)
+                        .placeholder(R.drawable.ic_launcher_background)
+                        .into(ivPlantDetail)
+                }
                 }
             }
+
+        binding.btnWaterNow.setOnClickListener {
+            // Sau này ông sẽ gọi viewModel.updateWatering(selectedId) ở đây
+            android.widget.Toast.makeText(requireContext(), "Hệ thống đã ghi nhận bạn vừa tưới cây!", android.widget.Toast.LENGTH_SHORT).show()
+        }
+        }
     }
-}
+
+

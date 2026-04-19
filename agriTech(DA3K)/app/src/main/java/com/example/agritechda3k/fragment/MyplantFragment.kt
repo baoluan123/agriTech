@@ -5,56 +5,77 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.agritechda3k.R
+import com.example.agritechda3k.adapter.PlantUserAdapter
+import com.example.agritechda3k.api.RetrofitClient
+import com.example.agritechda3k.api.service.PlantApi
+import com.example.agritechda3k.api.service.PlantUserApi
+import com.example.agritechda3k.database.DatabaseSetup
+import com.example.agritechda3k.database.repository.PlantUserRepository
+import com.example.agritechda3k.databinding.FragmentHomeBinding
+import com.example.agritechda3k.databinding.FragmentMyplantBinding
+import com.example.agritechda3k.viewmodel.PlantUserViewModel
+import com.example.agritechda3k.viewmodelfactory.PlantUserViewModelFactory
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [MyplantFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class MyplantFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
+
+    private var _binding: FragmentMyplantBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var plantAdapter: PlantUserAdapter
+    // 2. Cần khởi tạo repository để truyền vào Factory
+    private val viewModel: PlantUserViewModel by activityViewModels {
+        val database = DatabaseSetup.getDatabase(requireContext())
+        val api = RetrofitClient.createService(PlantUserApi::class.java)
+        val repository = PlantUserRepository(database.planUserDao(),api)
+        PlantUserViewModelFactory(repository)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_myplant, container, false)
+    ): View {
+        // 3. Đổi lại đúng layout của MyPlant
+        _binding = FragmentMyplantBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MyplantFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MyplantFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupRecyclerView()
+        // Quan sát dữ liệu
+        viewModel.myPlantList.observe(viewLifecycleOwner) { plants ->
+            plantAdapter.setData(plants)
+        }
+
+    }
+
+
+
+    //khoi tao giao dien adapter
+    //chuyen qua details
+    private fun setupRecyclerView() {
+        plantAdapter = PlantUserAdapter(emptyList()) {
+            plant->
+            viewModel.selectedMyPlantId = plant.id
+            findNavController().navigate(R.id.action_nav_home_to_MyPlantdetailFragment)
+        }
+        binding.rvMyPlants.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = plantAdapter
+            // Giúp cuộn mượt hơn
+            setHasFixedSize(true)
+        }
+        // Load data từ API (fix ID user = 1) *****
+        viewModel.fetchMyPlants(1L)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

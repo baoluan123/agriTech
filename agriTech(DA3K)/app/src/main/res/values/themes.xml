@@ -6,4 +6,7 @@
     </style>
 
     <style name="Theme.AgriTechDA3K" parent="Base.Theme.AgriTechDA3K" />
+    <style name="CircleImage" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>
