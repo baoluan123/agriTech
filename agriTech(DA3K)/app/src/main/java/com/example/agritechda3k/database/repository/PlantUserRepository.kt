@@ -12,8 +12,10 @@ class PlantUserRepository(private val plantUserDao: PlantUserDao, private val pl
     // 1. Dữ liệu "sống" cho màn hình My Garden (Quan sát trực tiếp từ Room)
     val allMyPlants: Flow<List<PlantUser>> = plantUserDao.getAllMyPlants()
     // 2. Hàm đồng bộ dữ liệu từ Spring Boot về máy
-    suspend fun loadMyPlants(userId: Long) {
+    suspend fun loadMyPlants() {
         try {
+            val userId:Long = plantUserDao.getAuthId()
+
             val response = plantUserApi.getMyPlantList(userId)
 
             if (response.isSuccessful) {
@@ -38,4 +40,5 @@ class PlantUserRepository(private val plantUserDao: PlantUserDao, private val pl
     fun getMyPlantById(id: Long): Flow<PlantUser?> {
         return plantUserDao.getMyPlantById(id)
     }
+
 }

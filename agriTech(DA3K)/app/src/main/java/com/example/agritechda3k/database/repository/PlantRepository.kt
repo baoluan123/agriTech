@@ -28,4 +28,26 @@ class PlantRepository(private val plantDao: PlantDao, private val plantApi: Plan
             Log.e("PLANT_REPO", "Lỗi đồng bộ: ${e.message}")
         }
     }
+    suspend fun detailData(id:Long):Result<Plant> {
+       return try {
+            val response = plantApi.getPlantDetail(id)
+            if(response.isSuccessful) {
+                val dto = response.body()
+                if(dto != null) {
+                    val entity = dto.toEntity()
+                    plantDao.addPlantDetail(entity)
+                    Log.d("PLANT_REPO", "Đã cập nhật $entity vào Room")
+                    Result.success(entity)
+                } else {
+                    Result.failure(Exception("Dữ liệu chi tiết trống"))
+                }
+            } else {
+                val error = response.errorBody()?.string() ?: "Lỗi server"
+                Result.failure(Exception(error))
+            }
+        }catch (e: Exception) {
+            Log.e("PLANT_REPO", "Lỗi đồng bộ: ${e.message}")
+            Result.failure(e)
+        }
+    }
 }

@@ -34,8 +34,13 @@ public class AuthApi {
         }
     }
     @PostMapping("/register")
-    public String register(@RequestBody RegisterRequestDTO dto) {
-        String resurt = this.authService.register(dto);
-        return resurt;
+    public ResponseEntity<?> register(@RequestBody RegisterRequestDTO dto) {
+        try{
+            LoginResponseDTO resurt = this.authService.register(dto);
+            return ResponseEntity.ok(resurt);
+        } catch(RuntimeException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+
+        }
     }
 }

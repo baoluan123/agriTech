@@ -70,8 +70,9 @@ class MyplantFragment : Fragment() {
             // Giúp cuộn mượt hơn
             setHasFixedSize(true)
         }
+
         // Load data từ API (fix ID user = 1) *****
-        viewModel.fetchMyPlants(1L)
+        viewModel.fetchMyPlants()
     }
 
     override fun onDestroyView() {

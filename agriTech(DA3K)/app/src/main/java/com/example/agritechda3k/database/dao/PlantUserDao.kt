@@ -17,4 +17,6 @@ interface PlantUserDao {
     suspend fun deleteAll()
     @Query("SELECT * FROM plant_user WHERE id = :id")
     fun getMyPlantById(id: Long): Flow<PlantUser?>
+    @Query("SELECT id FROM auths")
+    suspend fun getAuthId(): Long
 }

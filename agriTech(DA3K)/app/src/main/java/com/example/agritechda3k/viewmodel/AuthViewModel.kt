@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.agritechda3k.api.dto.LoginRequestDTO
+import com.example.agritechda3k.api.dto.RegisterRequestDTO
 import com.example.agritechda3k.database.repository.AuthRepository
 import kotlinx.coroutines.launch
 
@@ -30,6 +31,21 @@ class AuthViewModel(val repository: AuthRepository): ViewModel() {
                 msg->_authResult.value = msg
                 _isSuccess.value = true
             }.onFailure { exception->
+                _authResult.value = exception.message
+                _isSuccess.value = false
+            }
+        }
+    }
+    fun register(dto: RegisterRequestDTO) {
+        _isLoading.value = true
+        viewModelScope.launch {
+            val result = repository.register(dto)
+            _isLoading.value = false
+            result.onSuccess {
+                msg->_authResult.value = msg
+                _isSuccess.value = true
+            }.onFailure {
+                    exception->
                 _authResult.value = exception.message
                 _isSuccess.value = false
             }
