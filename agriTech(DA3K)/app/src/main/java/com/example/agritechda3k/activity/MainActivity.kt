@@ -1,14 +1,18 @@
 package com.example.agritechda3k.activity
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.agritechda3k.R
+import com.example.agritechda3k.database.DatabaseSetup
 import com.example.agritechda3k.databinding.ActivityMainBinding
+import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity() {
@@ -29,5 +33,16 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
         val bottom = binding.bottom
         bottom.setupWithNavController(navController)
+
+        binding.btnLogout.setOnClickListener {
+            lifecycleScope.launch {
+                val db = DatabaseSetup.getDatabase(this@MainActivity)
+                db.authDao().clearAuth()
+                val intent = Intent(this@MainActivity, AuthActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            }
+        }
     }
 }
