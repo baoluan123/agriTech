@@ -1,6 +1,7 @@
 package com.example.agritechda3k.database.repository
 
 import com.example.agritechda3k.api.dto.LoginRequestDTO
+import com.example.agritechda3k.api.dto.RegisterRequestDTO
 import com.example.agritechda3k.api.service.AuthApi
 import com.example.agritechda3k.database.dao.AuthDao
 import com.example.agritechda3k.mapper.auth.toEntityAuth
@@ -30,5 +31,26 @@ class AuthRepository(private val api: AuthApi,private val dao: AuthDao) {
             Result.failure(Exception("Không thể kết nối đến máy chủ: ${e.message}"))
         }
 
+    }
+    suspend fun register(dto: RegisterRequestDTO):Result<String> {
+        return try {
+            val response = api.register(dto)
+            if(response.isSuccessful && response.body() != null) {
+                val register = response.body()!!
+                if(register.message?.contains("thành công") == true) {
+                    val auth = register.toEntityAuth()
+                    dao.insertAuth(auth)
+                    Result.success(register.message ?: "Đăng ký thành công")
+                }else {
+                    Result.failure(Exception("Phản hồi từ server trống"))
+                }
+            } else{
+                val errorMsg = response.errorBody()?.string() ?: "Lỗi đăng ký "
+                Result.failure(Exception(errorMsg))
+            }
+
+        }catch (e: Exception) {
+            Result.failure(Exception("Không thể kết nối đến máy chủ: ${e.message}"))
+        }
     }
 }

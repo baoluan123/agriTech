@@ -1,14 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.DetailFragment">
+    android:background="#F1F8E9"> <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <!-- TODO: Update blank fragment layout -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp">
+        <ImageView
+            android:id="@+id/imgDetail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_launcher_background" />
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/txtTenDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Tên cây"
+        android:textColor="#2E7D32"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/txtIdealHumidity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="💧 Độ ẩm lý tưởng: 70%"
+                android:textSize="16sp" />
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE" android:layout_marginVertical="8dp"/>
+
+            <TextView
+                android:id="@+id/txtWaterFrequency"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="📅 Tần suất tưới: 3 ngày/lần"
+                android:textSize="16sp" />
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE" android:layout_marginVertical="8dp"/>
+
+            <TextView
+                android:id="@+id/txtFertilizer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🧪 Phân bón: NPK 10-10-10"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Mô tả chi tiết"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textColor="#333333"/>
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/txtDescriptionDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:lineSpacingExtra="4dp"
+        android:text="Nội dung mô tả sẽ hiển thị ở đây..."
+        android:textSize="14sp"
+        android:textColor="#666666" />
+
+    <Button
+        android:id="@+id/btnAddMyPlant"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="#2E7D32"
+        android:text="Thêm vào vườn của tôi"
+        android:textColor="@android:color/white"
+        app:cornerRadius="8dp" />
+
+</LinearLayout>
+</ScrollView>

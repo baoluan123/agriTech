@@ -42,4 +42,19 @@ class PlantViewModel(private val repository: PlantRepository) :  ViewModel() {
             }
         }
     }
+
+    private val _selectedPlant = MutableLiveData<Plant?>()
+    val selectedPlant: LiveData<Plant?> = _selectedPlant
+
+    fun getDetailPlant(id:Long) {
+        viewModelScope.launch {
+            val detailPlant = repository.detailData(id)
+            detailPlant.onSuccess {
+                plant-> _selectedPlant.value = plant
+            }.onFailure {
+                // Log lỗi hoặc hiện Toast báo không tìm thấy cây
+                Log.e("VM", "Lỗi lấy chi tiết: ${it.message}")
+            }
+        }
+    }
 }

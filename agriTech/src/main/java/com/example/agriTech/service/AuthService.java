@@ -4,6 +4,7 @@ package com.example.agriTech.service;
 
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.agriTech.dto.auth.LoginResponseDTO;
 import com.example.agriTech.dto.auth.RegisterRequestDTO;
@@ -29,11 +30,15 @@ public class AuthService {
         this.registerResponseMapper = registerResponseMapper;
         this.loginResponseMapper = loginResponseMapper;
     }
-
-    public String register(RegisterRequestDTO dto) {
+    @Transactional // Thêm cái này để nếu lưu User lỗi thì Account cũng không được tạo (an toàn data)
+    public LoginResponseDTO register(RegisterRequestDTO dto) {
+        if(this.accountRepository.existsByUsername(dto.getUsername())) {
+            throw new RuntimeException("Tài khoản [" + dto.getUsername() + "] đã tồn tại!");
+        }
+        // 2. Lưu Account
         Account acc = this.registerResponseMapper.toAccountEntity(dto);
         Account accSave = this.accountRepository.save(acc);
-
+// 3. Lưu chi tiết User hoặc Admin
         if(dto.getRole() == 1) {
             Admin a = this.registerResponseMapper.toAdminEntity(dto, accSave);
             this.adminRepository.save(a);
@@ -41,7 +46,14 @@ public class AuthService {
             User u = this.registerResponseMapper.toUserEntity(dto, accSave);
             this.userRepository.save(u);
         }
-        return "Đăng ký thành công!";
+        // 4. Dùng Mapper chuyển Account vừa save thành LoginResponseDTO để trả về
+        User u1 = null;
+        if(accSave.getRole() != null && accSave.getRole() != 1) {
+            u1 = this.userRepository.findByAccount(accSave).orElse(null);
+        }
+        LoginResponseDTO registerdDto = this.loginResponseMapper.toLoginResponseDTO(accSave, u1);
+        registerdDto.setMessage("Đăng ký và đăng nhập thành công!");
+        return registerdDto;
     }
     public LoginResponseDTO login(String username, String password) {
         System.out.println("Đang tìm tài khoản: [" + username + "]"); // Kiểm tra xem username truyền vào có đúng không

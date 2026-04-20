@@ -80,4 +80,8 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.8.2")
     // Thư viện Glide để tải ảnh từ URL
     implementation(libs.glide)
+    //toolbar
+    implementation("com.google.android.material:material:1.11.0")
+    // Các thư viện cũ hơn nếu có
+    implementation("androidx.appcompat:appcompat:1.6.1")
 }

@@ -7,12 +7,42 @@
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/topToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:title="Agri-Tech"
+            app:titleTextColor="@color/white">
+
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_gravity="end"
+                android:layout_marginEnd="10dp"
+                android:backgroundTint="#FF5252"
+                android:text="Đăng xuất"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                app:cornerRadius="8dp" />
+
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottom"
+        android:layout_below="@id/appBar"
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_graph" />
 
@@ -20,23 +50,8 @@
         android:id="@+id/bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:layout_alignParentBottom="true"
         android:background="?android:attr/windowBackground"
-        app:menu="@menu/bottom_nav_menu"
-        />
-
-    <Button
-        android:id="@+id/btnLogout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="15dp"
-        android:text="Đăng xuất"
-        android:backgroundTint="#FF5252"
-        android:textColor="@color/white"
-        android:textSize="12sp" />
+        app:menu="@menu/bottom_nav_menu" />
 
 </RelativeLayout>

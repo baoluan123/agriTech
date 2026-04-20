@@ -16,10 +16,10 @@ class PlantUserViewModel(private val repository: PlantUserRepository) : ViewMode
     val isLoading: LiveData<Boolean> get() = _isLoading
     // Biến để lưu ID khi người dùng chọn xem chi tiết
     var selectedMyPlantId: Long = -1L
-    fun fetchMyPlants(userId: Long) {
+    fun fetchMyPlants() {
         viewModelScope.launch {
             _isLoading.value = true
-            repository.loadMyPlants(userId)
+            repository.loadMyPlants()
             _isLoading.value = false
         }
     }
@@ -27,4 +27,5 @@ class PlantUserViewModel(private val repository: PlantUserRepository) : ViewMode
     fun getDetail(id: Long): LiveData<PlantUser?> {
         return repository.getMyPlantById(id).asLiveData()
     }
+
 }
