@@ -18,8 +18,12 @@ public class SensorController {
     @PostMapping("/moisture")
     public ResponseEntity<String> receiveMoisture(@RequestBody Map<String, Object> data) {
         System.out.println("ID Cảm biến: " + data.get("sensorId"));
-        System.out.println("Giá trị độ ẩm: " + data.get("value"));
+        
+        System.out.println("nhiệt độ: " + data.get("temperature"));
+        System.out.println("Giá trị độ ẩm: " + data.get("humidity"));
+        System.out.println("Giá trị độ ẩm đất: " + data.get("soilMoisture"));
         System.out.println("Trạng thái: " + data.get("status"));
+        
 
         return ResponseEntity.ok("Server VKU đã nhận dữ liệu!");
 
