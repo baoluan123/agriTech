@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -31,5 +32,10 @@ public class PlantUser {
     private LocalDateTime lastWatered;
     @Column(name = "status") 
     private Boolean status;
+
+    //**** dto,mapping,kotlin*/
+    @OneToOne
+    @JoinColumn(name = "device_id")
+    private Device device; // Thiết bị nào đang quản lý cây này
     
 }

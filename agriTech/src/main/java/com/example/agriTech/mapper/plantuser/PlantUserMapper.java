@@ -16,7 +16,11 @@ public class PlantUserMapper {
         dto.setCustomName(plantUser.getCustomName());
         dto.setLastWatered(plantUser.getLastWatered());
         dto.setStatus(plantUser.getStatus());
-
+        
+        // SỬA LẠI: Gán đúng DeviceCode vào trường deviceCode của DTO
+        if (plantUser.getDevice() != null) {
+            dto.setDeviceCode(plantUser.getDevice().getDeviceCode());
+        }
         //
         if(plantUser.getPlant() != null) {
             dto.setPlantId(plantUser.getPlant().getId());

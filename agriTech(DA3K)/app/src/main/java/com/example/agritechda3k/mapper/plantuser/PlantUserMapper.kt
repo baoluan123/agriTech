@@ -3,7 +3,7 @@ package com.example.agritechda3k.mapper.plantuser
 import com.example.agritechda3k.api.dto.PlantUserDTO
 import com.example.agritechda3k.model.PlantUser
 
-fun PlantUserDTO.toEntity(): PlantUser{
+fun PlantUserDTO.toEntitys(): PlantUser{
     return PlantUser(
         id = this.id,
         customName = this.customName,
@@ -16,11 +16,12 @@ fun PlantUserDTO.toEntity(): PlantUser{
         plantName = this.plantName,
         imageUrl = this.imageUrl,
         fertilizerInfo = this.fertilizerInfo,
-        fullName = this.fullName
+        fullName = this.fullName,
+        deviceCode = this.deviceCode
     )
 }
 
 // Chuyển cả danh sách (Cái này chính là cái ông gọi trong Repository)
 fun List<PlantUserDTO>.toEntityList(): List<PlantUser> {
-    return this.map { it.toEntity() }
+    return this.map { it.toEntitys() }
 }

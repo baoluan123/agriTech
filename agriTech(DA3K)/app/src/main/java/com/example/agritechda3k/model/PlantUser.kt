@@ -28,5 +28,6 @@ data class PlantUser(
     val plantName: String?,
     val imageUrl: String?,
     val fertilizerInfo:String?,
-    val fullName:String?
+    val fullName:String?,
+    val deviceCode: String?
 )

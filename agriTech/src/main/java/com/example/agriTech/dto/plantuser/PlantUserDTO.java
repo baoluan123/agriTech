@@ -9,7 +9,7 @@ import lombok.Data;
 public class PlantUserDTO {
     private Long id; // ID của plants_users
     private String customName;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime lastWatered;
     private Boolean status;
     // Thuộc tính từ bảng Plant
@@ -21,6 +21,7 @@ public class PlantUserDTO {
     // Thuộc tính từ bảng Account/User
     private String FullName;
     private Long userId;
+    private String deviceCode;
 
     
 }

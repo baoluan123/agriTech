@@ -12,4 +12,8 @@ interface PlantUserApi {
     ): Response<List<PlantUserDTO>> // Phải tạo thêm file PlantUserDTO này
     @GET("myplant/detail/{id}")
     suspend fun getDetailMyPlant(@Path("id") id: Long) : Response<PlantUserDTO>
+
+    // (Tiện tay viết luôn) API lấy danh sách device rảnh nếu ông cần
+    @GET("api/devices/available")
+    suspend fun getAvailableDevices(): Response<List<String>>
 }

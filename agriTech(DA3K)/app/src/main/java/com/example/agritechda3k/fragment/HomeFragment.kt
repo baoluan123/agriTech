@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.agritechda3k.R
+import com.example.agritechda3k.adapter.AddPlantBottomSheet
 import com.example.agritechda3k.adapter.PlantAdapter
 import com.example.agritechda3k.api.RetrofitClient
 import com.example.agritechda3k.api.service.PlantApi
@@ -103,7 +104,12 @@ class HomeFragment : Fragment() {
         return when (item.itemId) {
             R.id.action_add_to_garden -> { // Giả sử ID trong file menu của ông là menu_save
                 plant?.let {
-                    Toast.makeText(context, "Đã lưu: ${it.namePlant}", Toast.LENGTH_SHORT).show()
+                    selecPlant->
+                    val bottomSheet = AddPlantBottomSheet(selecPlant){
+                        findNavController().navigate(R.id.nav_myplant)
+                    }
+                    bottomSheet.show(parentFragmentManager, "AddPlant")
+                    Toast.makeText(context, "Đã lưu: ${selecPlant.namePlant}", Toast.LENGTH_SHORT).show()
                     // Xử lý logic lưu vào danh sách cá nhân ở đây
                 }
                 true
