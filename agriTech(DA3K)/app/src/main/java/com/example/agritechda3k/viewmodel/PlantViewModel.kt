@@ -57,4 +57,12 @@ class PlantViewModel(private val repository: PlantRepository) :  ViewModel() {
             }
         }
     }
+    fun registerPlantToDevice(plantId: Long,deviceCode: String,lastWatered: String){
+        viewModelScope.launch{
+            val result = repository.addPlantToGarden(plantId,deviceCode,lastWatered)
+            if (result.isSuccess) {
+                // Thông báo thành công hoặc điều hướng
+            }
+        }
+    }
 }

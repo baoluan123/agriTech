@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.agritechda3k.api.dto.PlantDetailsDTO
 import com.example.agritechda3k.model.Plant
+import com.example.agritechda3k.model.PlantUser
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -18,6 +19,10 @@ interface PlantDao {
     suspend fun getPlantById(id:Long): Plant?
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addPlantDetail(plant: Plant)
+    @Query("SELECT id FROM auths")
+    suspend fun getAuth(): Long
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPlantUser(plantUser: PlantUser)
 
 
 }

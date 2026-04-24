@@ -10,5 +10,6 @@ data class PlantUserDTO(
     val imageUrl: String?,
     val fertilizerInfo: String?,
     val fullName: String?, // Nếu bên Spring ông đặt là FullName thì ở đây phải là FullName
-    val userId: Long
+    val userId: Long,
+    val deviceCode:String
 )

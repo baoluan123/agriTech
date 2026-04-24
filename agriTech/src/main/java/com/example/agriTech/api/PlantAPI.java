@@ -6,19 +6,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.agriTech.dto.plant.PlantDetailDTO;
 import com.example.agriTech.dto.plant.PlantListDTO;
+import com.example.agriTech.dto.plantuser.PlantUserDTO;
 import com.example.agriTech.service.PlantService;
+import com.example.agriTech.service.PlantUserService;
 
 @RestController
 @RequestMapping("/api/plants")
 public class PlantAPI {
     private final PlantService plantService;
-    public PlantAPI(PlantService plantService){
+    private final PlantUserService plantUserService;
+    public PlantAPI(PlantService plantService,PlantUserService plantUserService){
         this.plantService = plantService;
+        this.plantUserService = plantUserService;
     }
     @GetMapping
     public List<PlantListDTO> getPlantList() {
@@ -33,6 +39,15 @@ public class PlantAPI {
             // Nếu lỗi (không tìm thấy ID), trả về 404 hoặc 400
         // Vì Kotlin không cho null, nên nếu lỗi ông phải báo lỗi HTTP Code rõ ràng
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+    @PostMapping("/addPlantUser")
+    public ResponseEntity<?> addPlantUser(@RequestBody PlantUserDTO dto) {
+        try {
+            PlantUserDTO plantUser = this.plantUserService.addPlantUser(dto);
+            return ResponseEntity.ok(plantUser);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 }

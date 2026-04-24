@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.example.agriTech.model.Device;
 import com.example.agriTech.model.PlantUser;
 @Repository
 public interface PlantUserRepository extends JpaRepository<PlantUser, Long> {
@@ -25,4 +26,6 @@ public interface PlantUserRepository extends JpaRepository<PlantUser, Long> {
            "LEFT JOIN FETCH p.images " +
            "WHERE pu.user.id = :userId")
     List<PlantUser> findAllByUserId(@Param("userId") Long userId);
+
+    PlantUser findByDevice(Device device);
 }

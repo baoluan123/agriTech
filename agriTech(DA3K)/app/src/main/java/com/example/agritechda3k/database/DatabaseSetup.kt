@@ -13,7 +13,7 @@ import com.example.agritechda3k.model.Plant
 import com.example.agritechda3k.model.PlantUser
 
 
-@Database(entities = [Plant::class, PlantUser::class, Auth::class], version = 4, exportSchema = false)
+@Database(entities = [Plant::class, PlantUser::class, Auth::class], version = 5, exportSchema = false)
 abstract class DatabaseSetup: RoomDatabase() {
     //***
     abstract fun plantDao(): PlantDao
