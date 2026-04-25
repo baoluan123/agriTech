@@ -62,7 +62,7 @@ class MyplantFragment : Fragment() {
         plantAdapter = PlantUserAdapter(emptyList()) {
             plant->
             viewModel.selectedMyPlantId = plant.id
-            findNavController().navigate(R.id.action_nav_home_to_MyPlantdetailFragment)
+            findNavController().navigate(R.id.action_myplant_to_detail)
         }
         binding.rvMyPlants.apply {
             layoutManager = LinearLayoutManager(context)

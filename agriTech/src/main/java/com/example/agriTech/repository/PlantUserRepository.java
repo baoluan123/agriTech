@@ -28,4 +28,11 @@ public interface PlantUserRepository extends JpaRepository<PlantUser, Long> {
     List<PlantUser> findAllByUserId(@Param("userId") Long userId);
 
     PlantUser findByDevice(Device device);
+
+    // Cách 1: Viết theo đúng chuẩn Property Traversal (Spring tự sinh SQL)
+    Optional<PlantUser> findByDeviceDeviceCode(String deviceCode);
+
+    // Cách 2: Nếu bạn muốn an toàn, tránh nhầm lẫn giữa các thuộc tính trùng tên
+    // Dùng dấu gạch dưới "_" để phân tách giữa các Entity
+    Optional<PlantUser> findByDevice_DeviceCode(String deviceCode);
 }
