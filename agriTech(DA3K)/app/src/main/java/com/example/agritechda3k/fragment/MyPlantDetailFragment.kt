@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.agritechda3k.R
 import com.example.agritechda3k.databinding.FragmentMyPlantDetailBinding
@@ -57,7 +58,21 @@ class MyPlantDetailFragment : Fragment() {
             // Sau này ông sẽ gọi viewModel.updateWatering(selectedId) ở đây
             android.widget.Toast.makeText(requireContext(), "Hệ thống đã ghi nhận bạn vừa tưới cây!", android.widget.Toast.LENGTH_SHORT).show()
         }
+        // 2. PHẢI ĐƯA LỆNH CHUYỂN TRANG VÀO ĐÂY (Nút chuông/Nút lịch sử)
+        binding.btnGoToHistory.setOnClickListener {
+            val plantUserId = selectId
+            val bundle = Bundle().apply {
+                putLong("plantUserId", plantUserId)
+            }
+            findNavController().navigate(
+                R.id.action_detail_to_history,
+                bundle
+            )
         }
-    }
+        }
+
+        }
+
+    
 
 

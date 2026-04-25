@@ -26,7 +26,7 @@
         android:label="fragment_myplant"
         tools:layout="@layout/fragment_myplant">
         <action
-            android:id="@+id/action_nav_home_to_MyPlantdetailFragment"
+            android:id="@+id/action_myplant_to_detail"
 
             app:destination="@+id/MyPlantDetailFragment" />
     </fragment>
@@ -44,6 +44,19 @@
         android:id="@+id/MyPlantDetailFragment"
         android:name="com.example.agritechda3k.fragment.MyPlantDetailFragment"
         android:label="fragment_my_plant_detail"
-        tools:layout="@layout/fragment_my_plant_detail" />
+        tools:layout="@layout/fragment_my_plant_detail" >
+        <action
+            android:id="@+id/action_detail_to_history"
+            app:destination="@id/historyFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.example.agritechda3k.fragment.HistoryFragment"
+        android:label="Lịch sử thông báo"
+        tools:layout="@layout/fragment_history">
+        <argument
+            android:name="plantUserId"
+            app:argType="long" />
+    </fragment>
 
 </navigation>
