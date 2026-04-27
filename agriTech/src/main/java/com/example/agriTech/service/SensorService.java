@@ -20,7 +20,7 @@ public class SensorService {
     private final PlantUserRepository plantUserRepository;
     private final DeviceRepository deviceRepository;
     private final NotificationRepository notificationRepository;
-    // Biến lưu thời điểm lưu Log cuối cùng (để giãn cách 5 phút)
+    // Biến lưu thời điểm lưu Log cuối cùng (để giãn cách 5 phút) ngăn nước tràn dữ liệu
     private static LocalDateTime lastLogTime = LocalDateTime.MIN;
     public SensorService(SensorRepository sensorRepository,PlantUserRepository plantUserRepository,DeviceRepository deviceRepository,NotificationRepository notificationRepository) {
         this.sensorRepository = sensorRepository;
@@ -41,6 +41,7 @@ public class SensorService {
         if(plantUser != null ) {
             //B1: luôn update để App Kotlin lấy được số mới nhất
             // Cập nhật lần cuối tưới nếu trạng thái là UOT
+            //**** */
             if("UOT".equalsIgnoreCase(dto.getStatus())){
                 //**** */
                 plantUser.setLastWatered(LocalDateTime.now());
@@ -49,7 +50,7 @@ public class SensorService {
             checkAndAction(dto);
         }
         // 4. LƯU LỊCH SỬ (Giãn cách 5 phút để SQL không bị quá tải)
-        if(LocalDateTime.now().isAfter(lastLogTime.plusMinutes(5))) {
+        if(LocalDateTime.now().isAfter(lastLogTime.plusMinutes(20))) {
             //mapping sau
             Sensor log = new Sensor();
             log.setDevice(device);
@@ -71,7 +72,7 @@ public class SensorService {
         PlantUser plantUser = this.plantUserRepository.findByDeviceDeviceCode(dto.getSensorId())
                                 .orElse(null);
         if(plantUser != null) {
-            Device device = plantUser.getDevice(); // Lấy device từ quan hệ
+            // Device device = plantUser.getDevice(); // Lấy device từ quan hệ
             
             // 2. Logic theo Tần suất (Thời gian) text{Interval Hours} = waterFrequency (số ngày) x 24 giờ
             Integer daysBetween = plantUser.getPlant().getWaterFrequency();
@@ -95,19 +96,23 @@ public class SensorService {
             boolean isTooDry = currentMoisturePercent < humidity;
             if(isTooDry) {
                 String title = "Cảnh báo thiếu nước";
+                //* */
                 boolean isNotified = notificationRepository.existsByDeviceIdAndTitleAndCreatedAtAfter(
-                device.getId(), title, LocalDateTime.now().minusMinutes(30));
+                plantUser.getDevice().getId(), title, LocalDateTime.now().minusMinutes(30));
                 if(!isNotified) {
-                    saveNotification(device, title, "Đất tại '" + plantUser.getCustomName() + "' đang khô (" + currentMoisturePercent + "%). Hãy tưới cây!");
+                    //* */
+                    saveNotification(plantUser, title, "Đất tại '" + plantUser.getCustomName() + "' đang khô (" + currentMoisturePercent + "%). Hãy tưới cây!");
                 }
                 // System.out.println(">>> [10s CHECK] Cảnh báo thiếu nước tại thiết bị: " + dto.getSensorId());
                 // Gửi lệnh tưới hoặc thông báo ở đây
             } else if(isTimeToGo) {
                 String title = "Lịch tưới định kỳ";
+                //* */
                 boolean isNotified = notificationRepository.existsByDeviceIdAndTitleAndCreatedAtAfter(
-                    device.getId(), title, LocalDateTime.now().minusHours(12)); // Lịch thì 12h báo 1 lần thôi
+                    plantUser.getDevice().getId(), title, LocalDateTime.now().minusHours(12)); // Lịch thì 12h báo 1 lần thôi
                     if (!isNotified) {
-                saveNotification(device, title, 
+                        //*/ */
+                saveNotification(plantUser, title, 
                     "Đã đến lúc tưới nước định kỳ cho '" + plantUser.getCustomName() + "' theo lịch.");
             }
                 System.out.println(" CẢNH BÁO: Đã đến lịch tưới định kỳ (mặc dù đất vẫn ẩm)." + dto.getSensorId());
@@ -116,15 +121,18 @@ public class SensorService {
         }
     }
     //DTO sau
-    private void saveNotification(Device device, String title, String message) {
+    private void saveNotification(PlantUser plantUser, String title, String message) {
         Notification notify = new Notification();
-        notify.setDevice(device);
+        notify.setDevice(plantUser.getDevice());
+        notify.setPlantUser(plantUser);
+        notify.setUser(plantUser.getUser());
         notify.setTitle(title);
         notify.setMessage(message);
         notify.setIsRead(false);
         notify.setCreatedAt(LocalDateTime.now());
         this.notificationRepository.save(notify);
-        System.out.println(">>> [NOTIFY] " + title + " - " + device.getDeviceCode());
+        // Bước này là để ông debug xem nó đã lấy đúng User chưa
+    System.out.println(">>> [NOTIFY SAVED] " + title + " cho User ID: " + plantUser.getUser().getId());
     }
 
 }

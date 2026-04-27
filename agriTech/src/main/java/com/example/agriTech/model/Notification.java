@@ -30,5 +30,11 @@ public class Notification {
     private Boolean isRead = false;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    @ManyToOne
+    @JoinColumn(name = "plant_user_id")
+    private PlantUser plantUser;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }
