@@ -9,7 +9,7 @@
 #include <DHT.h>
 const char* ssid = "P325-2";
 const char* pass = "@123456789";
-const char* ip = "http://192.168.1.8:8080/api/sensor/moisture";
+const char* ip = "http://192.168.1.3:8080/api/sensor/moisture";
 // Cấu hình OLED
 #define SCreen_Width 128
 #define SCreen_Height 64
@@ -17,7 +17,7 @@ const char* ip = "http://192.168.1.8:8080/api/sensor/moisture";
 Adafruit_SH1106G display = Adafruit_SH1106G(SCreen_Width,SCreen_Height,&Wire, OLED_RESET);
 
 // Cấu hình DHT11
-#define DHTPIN 4
+#define DHTPIN 14
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
 // Cảm biến độ ẩm đất

@@ -6,25 +6,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.agritechda3k.R
 import com.example.agritechda3k.adapter.NotificationAdapter
 import com.example.agritechda3k.api.RetrofitClient
+import com.example.agritechda3k.api.SSEClient
 import com.example.agritechda3k.api.service.NotificationApi
 import com.example.agritechda3k.database.DatabaseSetup
 import com.example.agritechda3k.database.repository.NotificationRepository
 import com.example.agritechda3k.databinding.FragmentHistoryBinding
 import com.example.agritechda3k.viewmodel.NotificationViewModel
 import com.example.agritechda3k.viewmodelfactory.NotificationViewModelFactory
+import kotlinx.coroutines.launch
 
 
 class HistoryFragment : Fragment() {
-    private lateinit var binding: FragmentHistoryBinding
+    private var _binding: FragmentHistoryBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var notificationAdapter: NotificationAdapter
     // Khởi tạo ViewModel với Factory (Vì có Repository làm tham số)
     private val notificationViewModel: NotificationViewModel by viewModels {
         val api = RetrofitClient.createService(NotificationApi::class.java)
         val dao = DatabaseSetup.getDatabase(requireContext()).notificationDao()
-        val repository = NotificationRepository(api, dao)
+        val sseClient = SSEClient(requireContext(), dao)
+        val repository = NotificationRepository(api, dao, sseClient)
         NotificationViewModelFactory(repository)
     }
 
@@ -32,42 +39,62 @@ class HistoryFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_history, container, false)
+        _binding = FragmentHistoryBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = FragmentHistoryBinding.bind(view)
-        // 1. Hứng ID cây từ MyPlantDetailFragment truyền sang
+        // 1. Lấy ID cây truyền sang
         val plantUserId = arguments?.getLong("plantUserId") ?: -1L
-        // 2. Setup Adapter (Bản gọn nhẹ không nhức đầu)
-        val adapter = NotificationAdapter(emptyList()) { notification ->
-            // Logic khi click vào từng item (ví dụ: đánh dấu đọc cái này)
-            notificationViewModel.maskRead(notification.id)
+        // 2. Setup RecyclerView
+        setupRecyclerView()
+
+        // 3. Bắt đầu luồng xử lý dữ liệu
+        if (plantUserId != -1L) {
+            observeData(plantUserId)
+            // Đồng bộ dữ liệu mới nhất từ Server về máy
+            notificationViewModel.loadHistory(plantUserId)
+        }
+
+    }
+
+    private fun setupRecyclerView() {
+        notificationAdapter = NotificationAdapter(emptyList()) { notification ->
+            // Khi nhấn vào một tin: Đánh dấu là đã đọc
+            notificationViewModel.markAsRead(notification.id)
         }
         binding.rvHistory.apply {
+            adapter = notificationAdapter
             layoutManager = LinearLayoutManager(requireContext())
-            this.adapter = adapter
+            // Thêm đường kẻ giữa các item cho đẹp
+            addItemDecoration(
+                DividerItemDecoration(
+                    requireContext(),
+                    DividerItemDecoration.VERTICAL
+                )
+            )
         }
-        if (plantUserId != -1L) {
-            // 3. Quan sát dữ liệu từ Local DB (Room)
-            // Khi Room thay đổi (do refreshHistory), UI sẽ tự động cập nhật
-            notificationViewModel.getLocalHistory(plantUserId).observe(viewLifecycleOwner) { list ->
+    }
+    private fun observeData(plantUserId: Long){
+        // Quan sát StateFlow (hoặc LiveData) từ ViewModel
+        // Vì ViewModel của ông dùng StateFlow nên ta dùng lifecycleScope
+        viewLifecycleOwner.lifecycleScope.launch{
+            notificationViewModel.notifications.collect{
+                    list ->
                 if (list.isNullOrEmpty()) {
                     binding.tvEmpty.visibility = View.VISIBLE
+                    binding.rvHistory.visibility = View.GONE
                 } else {
                     binding.tvEmpty.visibility = View.GONE
-                    adapter.setData(list)
+                    binding.rvHistory.visibility = View.VISIBLE
+                    notificationAdapter.setData(list)
                 }
             }
-
-            // 4. Đồng bộ dữ liệu từ Server về máy
-            notificationViewModel.fetchAllHistory(plantUserId)
-
-            // 5. Tùy chọn: Đánh dấu đã đọc toàn bộ của cây này (nếu ông muốn)
-            // notificationViewModel.markAllReadForPlant(plantUserId)
         }
-
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

@@ -24,15 +24,21 @@ import kotlinx.coroutines.launch
 // Sửa lại import ở đầu file
 import android.os.Handler
 import android.os.Looper
+import com.example.agritechda3k.api.SSEClient
 import com.google.android.material.dialog.MaterialAlertDialogBuilder // Để hiện thông báo đẹp
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    // Khai báo ID ở một nơi duy nhất để dễ sửa (Sau này lấy từ Login)
+    private val currentUserId: Long = 1L
     private val notificationViewModel: NotificationViewModel by viewModels() {
         val api = RetrofitClient.createService(NotificationApi::class.java)
         val dao = DatabaseSetup.getDatabase(this).notificationDao()
-        val repository = NotificationRepository(api,dao)
+        // 1. Khởi tạo SSEClient tại đây
+        val sseClient = SSEClient(
+            this, dao)
+            val repository = NotificationRepository(api,dao,sseClient)
         NotificationViewModelFactory(repository)
     }
     //moi***
@@ -40,13 +46,11 @@ class MainActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private val checkNotificationRunnable = object : Runnable{
         override fun run() {
-            // Lấy userId từ Auth session (Ví dụ id = 1) // doi sau test cung
-            val currentUserId = 3L
 
             // Check TỔNG cả vườn
             // Nếu Dialog đang hiện thì tạm dừng check để tránh đè nhau
             if (!isDialogShowing) {
-                notificationViewModel.checkTotalUnread(currentUserId)
+                notificationViewModel.getTotalUnreadCount(currentUserId)
             }
             handler.postDelayed(this, 10000) // Để 5 giây cho ổn định ông nhé
         }
@@ -62,12 +66,27 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
+        // --- SETUP NAVIGATION ---
         val navHostFragment =supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         val bottom = binding.bottom
         bottom.setupWithNavController(navController)
+        // --- LOGIC THÔNG BÁO ---
+        handleNotificationIntent(intent) // Xử lý khi nhấn từ thanh trạng thái
+        // --- LOGIC THÔNG BÁO ---
+        // A. Chạy máy nghe Real-time (SSE)
+        notificationViewModel.startSse(currentUserId)
+        // B. Lắng nghe con số từ ViewModel để hiện Dialog
+        notificationViewModel.totalUnReadCount.observe(this) { count ->
+            if (count > 0 && !isDialogShowing) {
+                showWateringAlert()
+            }
+        }
 
+
+        // BẮT ĐẦU VÒNG LẶP CHECK KHI MỞ APP
+        handler.post(checkNotificationRunnable)
+        // --- LOGIC LOGOUT ---
         binding.btnLogout.setOnClickListener {
             lifecycleScope.launch {
                 val db = DatabaseSetup.getDatabase(this@MainActivity)
@@ -79,29 +98,32 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        notificationViewModel.totalUnReadCount.observe(this) { count ->
-            // Chỉ hiện Dialog khi có thông báo và chưa có cái Dialog nào đang mở
-            if(count > 0 && !isDialogShowing) {
-                // Nếu có thông báo mới (chưa đọc), hiện màn hình nhỏ ngay
-
-                showWateringAlert()
-            }
-        }
-        // BẮT ĐẦU VÒNG LẶP CHECK KHI MỞ APP
-        handler.post(checkNotificationRunnable)
-
     }
+
+    private fun handleNotificationIntent(intent: Intent?) {
+        val plantId = intent?.getLongExtra("PLANT_USER_ID", -1L) ?: -1L
+        if (plantId != -1L) {
+            val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            val bundle = Bundle().apply { putLong("plantUserId", plantId) }
+            navHostFragment.navController.navigate(R.id.historyFragment, bundle)
+        }
+    }
+
     private fun showWateringAlert() {
         MaterialAlertDialogBuilder(this)
             .setTitle("canh bao")
+            .setIcon(R.drawable.ic_notifications)
             .setMessage("cay cua ban dang can duoc cham soc")
             .setCancelable(false) // Bắt người dùng phải tương tác
             .setPositiveButton("Xem lịch sử") {dialog, _ ->
                 isDialogShowing = false
-                // Lệnh chuyển hướng fragment của ông ở đây
+                val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+                navHostFragment.navController.navigate(R.id.historyFragment)
                 dialog.dismiss()
             }
             .setNegativeButton("Đóng"){dialog, _ ->
+                // Đóng xong thì mark read để reset count, tránh Dialog hiện lại liên tục
+                notificationViewModel.markAllReadForUser(currentUserId)
                 isDialogShowing = false
                 // Mẹo: Nên gọi markAsRead cho thông báo mới nhất ở đây
                 // để lần check sau count sẽ về 0

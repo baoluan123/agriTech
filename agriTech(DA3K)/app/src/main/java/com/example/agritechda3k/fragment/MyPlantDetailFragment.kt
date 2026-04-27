@@ -13,11 +13,7 @@ import com.example.agritechda3k.databinding.FragmentMyPlantDetailBinding
 import com.example.agritechda3k.databinding.FragmentMyplantBinding
 import com.example.agritechda3k.viewmodel.PlantUserViewModel
 
-/**
- * A simple [Fragment] subclass.
- * Use the [MyPlantDetailFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+
 class MyPlantDetailFragment : Fragment() {
     private  var _binding: FragmentMyPlantDetailBinding? = null
     private val binding get() = _binding!!

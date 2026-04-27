@@ -1,66 +1,77 @@
 package com.example.agritechda3k.database.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
+import com.example.agritechda3k.api.SSEClient
 import com.example.agritechda3k.api.service.NotificationApi
 import com.example.agritechda3k.database.dao.NotificationDao
+import com.example.agritechda3k.mapper.Notification.toEntityssList
 import com.example.agritechda3k.model.Notification
+import kotlinx.coroutines.flow.Flow
 
 class NotificationRepository(
     private val api: NotificationApi,
-    private val dao: NotificationDao
+    private val dao: NotificationDao,
+    private val sseClient: SSEClient
 ) {
-    // 1. Lấy số lượng chưa đọc từ API (Phục vụ cái cửa sổ nhỏ Real-time) *** coi lai
-    suspend fun fetchUnreadCount(plantUserId:Long):Long? {
-        return try {
-            val response = api.getUnreadCount(plantUserId).execute()
-            if(response.isSuccessful) response.body() else 0
-        }catch (e: Exception) {
-            null
-        }
+    // 1. Lấy lịch sử từ Room để hiện lên UI (Dùng Flow để tự cập nhật khi có tin mới)
+    fun getHistory(plantUserId: Long): Flow<List<Notification>> {
+        return dao.getHistoryByPlant(plantUserId)
     }
-
-    // 2. Lấy toàn bộ lịch sử và lưu vào máy (Để xem offline)
-    suspend fun refreshHistory(plantUserId:Long) {
+    // 2. Gọi API lấy lịch sử từ Server và lưu vào Room (Sync dữ liệu)
+    suspend fun refreshHistory(plantUserId: Long) {
         try {
-            val response = api.getAllNotifications(plantUserId).execute()
+            val response = api.getHistory(plantUserId)
             if(response.isSuccessful) {
-                //tao file mapping sau
-                val entity = response.body()?.map {
-                        dto ->
-                    Notification(dto.id, dto.title, dto.message, dto.isRead, dto.createdAt, plantUserId)
-                }
-                if(entity != null) {
-                    dao.insertNotifications(entity)
+                response.body()?.let {
+                    dtoList->
+                    // Dùng Mapper của ông để biến DTO thành Entity/Model Room
+                    val entity = dtoList.toEntityssList()
+                    // Lưu vào Room (cái này sẽ làm Flow ở trên tự phát tín hiệu mới cho UI)
+                    dao.insertAll(entity)
                 }
             }
         }catch (e: Exception) {
-            // Xử lý lỗi mạng ở đây
+            Log.e("Repo", "Lỗi refresh lịch sử: ${e.message}")
         }
-
     }
-    // 3. Đánh dấu đã đọc (Vừa báo lên Server, vừa cập nhật ở máy)
+    // 3. Đánh dấu đã đọc (Vừa báo Server, vừa cập nhật Room)
     suspend fun markAsRead(notificationId: Long) {
         try {
-            // Phải thêm .execute() để nó thực sự gửi request lên Server
-            api.markAsRead(notificationId).execute()
-        } catch (e: Exception) {
-            // Nếu lỗi mạng thì vẫn cập nhật local để user đỡ khó chịu,
-            // nhưng server sẽ chưa update được
+            val response = api.markAsRead(notificationId)
+            if(response.isSuccessful) {
+                dao.markAsRead(notificationId)
+            }
+        }catch (e: Exception) {
+            Log.e("Repo", "Lỗi markAsRead: ${e.message}")
         }
-        dao.markAsRead(notificationId)
     }
-
-    //them ham nay
-    suspend fun fetchTotalUnread(userId: Long): Long? {
+    // 4. Quản lý Real-time (SSE)
+    fun startRealtimeNotifications(UserId:Long) {
+        sseClient.startListening(UserId)
+    }
+    fun stopRealtimeNotifications() {
+        sseClient.stopListening()
+    }
+    // 5. Check TỔNG số tin chưa đọc (Cho cái vòng lặp 10s ở MainActivity)
+    suspend fun getTotalUnreadCount(userId: Long): Int {
         return try {
-            val response = api.getTotalUnreadCount(userId).execute()
-            if (response.isSuccessful) response.body() else 0
-        } catch (e: Exception) { null }
+            val response = api.getUnreadCount(userId) // Gọi API
+            if (response.isSuccessful) response.body() ?: 0 else 0
+        } catch (e: Exception) {
+            Log.e("Repo", "Lỗi lấy unread count: ${e.message}")
+            0
+        }
     }
-
-    //thenm thang nay sau activity
-    // Không có suspend nhé, vì LiveData bản thân nó đã chạy bất đồng bộ rồi
-    fun getNotificationsFromRoom(plantUserId: Long): LiveData<List<Notification>> {
-        return dao.getNotificationsByPlant(plantUserId)
+    // 6. Đánh dấu đọc hết cho 1 User (Để dập cái Dialog cảnh báo)
+    suspend fun markAllRead(userId: Long) {
+        try {
+            val response = api.markAllRead(userId)
+            if (response.isSuccessful) {
+                dao.markAllAsReadForUser(userId) // Nhớ thêm hàm này vào DAO nữa nhé
+            }
+        } catch (e: Exception) {
+            Log.e("Repo", "Lỗi markAllRead: ${e.message}")
+        }
     }
 }
