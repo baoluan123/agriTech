@@ -1,12 +1,14 @@
 package com.example.agritechda3k.database.repository
 
 import android.util.Log
+import com.example.agritechda3k.api.dto.SensorDTO
 import com.example.agritechda3k.api.service.PlantUserApi
 import com.example.agritechda3k.database.dao.PlantUserDao
 import com.example.agritechda3k.model.PlantUser
 import com.example.agritechda3k.mapper.plantuser.toEntityList
 
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
 
 class PlantUserRepository(private val plantUserDao: PlantUserDao, private val plantUserApi: PlantUserApi) {
     // 1. Dữ liệu "sống" cho màn hình My Garden (Quan sát trực tiếp từ Room)
@@ -40,5 +42,14 @@ class PlantUserRepository(private val plantUserDao: PlantUserDao, private val pl
     fun getMyPlantById(id: Long): Flow<PlantUser?> {
         return plantUserDao.getMyPlantById(id)
     }
+
+    //sensor
+    suspend fun getSensorData(deviceId: Long, limit: Int) : Response<List<SensorDTO>> {
+        return plantUserApi.getSensorHistory(deviceId,limit)
+    }
+    /* Sau này khi bạn "tiêu hóa" xong Room, bạn có thể viết thêm logic:
+       Lấy dữ liệu từ API -> Lưu vào Room -> Trả về LiveData từ Room.
+       Nhưng hiện tại cứ trả trực tiếp từ API cho nhanh và nhẹ đầu.
+    */
 
 }

@@ -37,7 +37,7 @@ class SSEClient(
     private val gson = Gson()
     fun startListening(userId: Long) {
         val request = Request.Builder()
-            .url("http://192.168.1.3:8080/api/notifications/subscribe/$userId")
+            .url("http://192.168.1.4:8080/api/notifications/subscribe/$userId")
             .header("Accept", "text/event-stream")
             .build()
         val listener = object : EventSourceListener() {

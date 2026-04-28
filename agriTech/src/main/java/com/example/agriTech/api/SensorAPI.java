@@ -4,13 +4,19 @@ package com.example.agriTech.api;
 
 
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.agriTech.dto.sensor.SensorDTO;
+import com.example.agriTech.dto.sensor.SensorDTOK;
 import com.example.agriTech.service.SensorService;
 
 @RestController
@@ -47,5 +53,12 @@ public class SensorAPI {
         return ResponseEntity.ok("Server VKU đã nhận dữ liệu!");
 
     }
+
+    @GetMapping("/history/{deviceId}")
+    public ResponseEntity<List<SensorDTOK>> getHistorySenSor(@PathVariable Long deviceId,@RequestParam(defaultValue = "20") int limit){
+        List<SensorDTOK> data = this.sensorService.getChartData(deviceId,limit);
+        return ResponseEntity.ok(data);
+    }
+
     
 }
