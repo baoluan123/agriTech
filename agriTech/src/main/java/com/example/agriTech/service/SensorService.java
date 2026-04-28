@@ -1,10 +1,15 @@
 package com.example.agriTech.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.agriTech.dto.sensor.SensorDTO;
+import com.example.agriTech.dto.sensor.SensorDTOK;
+import com.example.agriTech.mapper.device.SensorKMapper;
 import com.example.agriTech.model.Device;
 import com.example.agriTech.model.Notification;
 import com.example.agriTech.model.PlantUser;
@@ -134,5 +139,28 @@ public class SensorService {
         // Bước này là để ông debug xem nó đã lấy đúng User chưa
     System.out.println(">>> [NOTIFY SAVED] " + title + " cho User ID: " + plantUser.getUser().getId());
     }
+
+
+
+
+    public List<SensorDTOK> getChartData(Long plantUserId, int limit){
+        // Tạo yêu cầu lấy trang đầu tiên với kích thước là 'limit' (ví dụ 20)
+    PageRequest topTwenty = PageRequest.of(0, limit);
+    List<Sensor> sensors = sensorRepository.findRecentLogs(plantUserId, topTwenty);
+    // Sau đó map sang DTO và nhớ đảo ngược lại danh sách 
+    // (Vì lấy DESC để lấy cái mới nhất, nhưng vẽ biểu đồ cần ASC)
+    return sensors.stream()
+                  .map(SensorKMapper::toDTO)
+                  .collect(Collectors.collectingAndThen(Collectors.toList(), list -> {
+                      java.util.Collections.reverse(list);
+                      return list;
+                  }));
+    }
+    // public List<SensorDTOK> getChartData(Long deviceId,int limit) {
+    //     return this.sensorRepository.findTopHistory(deviceId, limit)
+    //             .stream()
+    //             .map(SensorKMapper::toDTO)
+    //             .collect(Collectors.toList());
+    // }
 
 }

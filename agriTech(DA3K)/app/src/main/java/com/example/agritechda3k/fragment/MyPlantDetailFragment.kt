@@ -1,6 +1,8 @@
 package com.example.agritechda3k.fragment
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +19,13 @@ import com.example.agritechda3k.viewmodel.PlantUserViewModel
 class MyPlantDetailFragment : Fragment() {
     private  var _binding: FragmentMyPlantDetailBinding? = null
     private val binding get() = _binding!!
+    private val handler = Handler(Looper.getMainLooper())
+    private  val updateDataRunnable = object : Runnable {
+        override fun run() {
+            fetchSensorData() // Hàm gọi API lấy dữ liệu mới
+            handler.postDelayed(this, 5 * 60 * 1000) // 5 phút (ms)
+        }
+    }
     // Dùng chung ViewModel với Activity để lấy được selectedMyPlantId
     private val viewModel: PlantUserViewModel by activityViewModels()
     override fun onCreateView(
@@ -28,6 +37,10 @@ class MyPlantDetailFragment : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupChart() // 1. Khởi tạo biểu đồ
+        handler.post(updateDataRunnable) // 2. Bắt đầu vòng lặp 5 phút
+
         val selectId = viewModel.selectedMyPlantId
         viewModel.getDetail(selectId).observe(viewLifecycleOwner) {
             plant->
@@ -65,9 +78,59 @@ class MyPlantDetailFragment : Fragment() {
                 bundle
             )
         }
+    }
+    private fun setupChart() {
+        binding.steppedLineChart.apply {
+            description.isEnabled = false
+            setNoDataText("đang tải dữ liệu")
+            setTouchEnabled(true)
+            isDragEnabled = true
+            setScaleEnabled(true)
+            setPinchZoom(true)
+
+            xAxis.position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
+            xAxis.setDrawGridLines(false)
+            axisRight.isEnabled = false // Tắt trục bên phải cho đỡ rối
+        }
+    }
+    private fun fetchSensorData() {
+        val selectId = viewModel.selectedMyPlantId
+        if (selectId != -1L) {
+            viewModel.fetchSensorData(selectId, 20)
         }
 
+        viewModel.sensorPoints.observe(viewLifecycleOwner) { points ->
+            if (!points.isNullOrEmpty()) {
+                val entries = points.mapIndexed { index, point ->
+                    com.github.mikephil.charting.data.Entry(index.toFloat(), point.value)
+                }
+
+                val dataSet =
+                    com.github.mikephil.charting.data.LineDataSet(entries, "Độ ẩm (%)").apply {
+                        mode = com.github.mikephil.charting.data.LineDataSet.Mode.STEPPED
+                        color = android.graphics.Color.parseColor("#2E7D32")
+                        setDrawFilled(true)
+                        fillColor = android.graphics.Color.parseColor("#C8E6C9")
+                        setDrawCircles(true)
+                        lineWidth = 2f
+                    }
+
+                // Cấu hình nhãn trục X (HH:mm)
+                binding.steppedLineChart.xAxis.valueFormatter =
+                    object : com.github.mikephil.charting.formatter.ValueFormatter() {
+                        override fun getFormattedValue(value: Float): String {
+                            val index = value.toInt()
+                            return if (index >= 0 && index < points.size) points[index].timeLabel else ""
+                        }
+                    }
+
+                binding.steppedLineChart.data = com.github.mikephil.charting.data.LineData(dataSet)
+                binding.steppedLineChart.invalidate()
+            }
         }
+    }
+
+}
 
     
 
