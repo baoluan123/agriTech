@@ -1,0 +1,99 @@
+/* Table Styles */
+.table-container {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-box {
+  display: flex;
+  gap: 5px;
+}
+
+.search-box input {
+  padding: 8px 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 250px;
+}
+
+/* Table Design */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table th {
+  background-color: #f8f9fa;
+  color: #555;
+  font-weight: 600;
+  padding: 15px;
+  border-bottom: 2px solid #eee;
+  text-align: left;
+}
+
+table td {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  color: #444;
+}
+
+/* Buttons and Badges */
+.badge-admin {
+  background: #fb8c00;
+  color: white;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  margin-left: 8px;
+  text-transform: uppercase;
+}
+
+.btn-action {
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.btn-garden {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+.btn-garden:hover {
+  background-color: #2e7d32;
+  color: white;
+}
+
+.btn-icon {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 0 5px;
+  transition: 0.2s;
+}
+
+.btn-edit {
+  color: #1976d2;
+}
+.btn-delete {
+  color: #d32f2f;
+}
+
+.btn-edit:hover,
+.btn-delete:hover {
+  transform: scale(1.2);
+}

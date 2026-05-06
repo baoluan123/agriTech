@@ -7,6 +7,6 @@ data class LoginResponseDTO(
     val role:Int?,
     val message:String,
 
-    val phone:String,
-    val address:String
+    val phone: String? = null,
+    val address: String? = null,
 )

@@ -1,0 +1,58 @@
+/* Tùy chỉnh cho Card danh mục */
+.category-card {
+  border-bottom: 4px solid #2e7d32;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.description-box {
+  background: #f9f9f9;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 10px 0;
+  height: 80px; /* Cố định chiều cao để card đều nhau */
+  overflow-y: auto; /* Cuộn nếu description quá dài */
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
+  border-left: 3px solid #81c784;
+}
+
+/* Tùy chỉnh nút thêm mới ở Header */
+.btn-add-new {
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: 0.3s;
+}
+
+.btn-add-new:hover {
+  background-color: #1b5e20;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+
+.btn-delete-category {
+  color: #e53935 !important;
+}
+
+.btn-delete-category:hover {
+  background-color: #ffebee !important;
+}
+
+/* Làm ảnh bo tròn nhẹ và sắc nét */
+.plant-img-container img {
+  transition: transform 0.5s ease;
+}
+
+.plant-card:hover .plant-img-container img {
+  transform: scale(1.1);
+}

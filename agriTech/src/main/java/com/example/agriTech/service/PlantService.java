@@ -37,6 +37,17 @@ public class PlantService {
         PlantDetailDTO plantDTO = this.plantDetailMapper.toDetailDTO(plant);
         return plantDTO;
     }
+    public Plant getPlantById(Long id) {
+        Plant plant = plantRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid plant Id:" + id));
+                return plant;
+    }
+    public void savePlant(Plant plant) {
+       this.plantRepository.save(plant);
+    }
+    public void deletePlant(Long id) {
+        this.plantRepository.deleteById(id);
+    }
 
     
 }

@@ -55,6 +55,8 @@ public class AuthService {
         registerdDto.setMessage("Đăng ký và đăng nhập thành công!");
         return registerdDto;
     }
+
+
     public LoginResponseDTO login(String username, String password) {
         System.out.println("Đang tìm tài khoản: [" + username + "]"); // Kiểm tra xem username truyền vào có đúng không
         // 1. Tìm Account theo username
@@ -64,14 +66,21 @@ public class AuthService {
         if(!a.getPassword().equals(password)) {
             throw new RuntimeException("Mật khẩu không chính xác!");
         }
+
+        LoginResponseDTO responseDTO;
 // 3. Nếu là USER (role = 0), tìm thông tin Profile trong bảng User
-        User u = null;
+        // User u = null;
         if(a.getRole() != null && a.getRole()==0) {
-            u = this.userRepository.findByAccount(a).orElse(null);
+
+           User u = this.userRepository.findByAccount(a).orElse(null);
+           responseDTO = this.loginResponseMapper.toLoginResponseDTO(a, u);
+           responseDTO.setMessage("Đăng nhập thành công!");
+        } else {
+            Admin ad = this.adminRepository.findByAccount(a).orElse(null);
+            responseDTO = this.loginResponseMapper.toLoginResponseAdminDTO(a, ad);
+            responseDTO.setMessage("Đăng nhập thành công!");
         }
 
-        LoginResponseDTO responseDTO = this.loginResponseMapper.toLoginResponseDTO(a, u);
-        responseDTO.setMessage("Đăng nhập thành công!");
         return responseDTO;
     }
 }

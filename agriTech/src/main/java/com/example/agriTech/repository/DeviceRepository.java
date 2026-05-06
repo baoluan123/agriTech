@@ -8,4 +8,6 @@ import com.example.agriTech.model.Device;
 
 public interface DeviceRepository extends JpaRepository<Device,Long> {
     Device findByDeviceCode(String deviceCode);
+
+    
 }

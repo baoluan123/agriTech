@@ -103,7 +103,7 @@ public class SensorService {
                 String title = "Cảnh báo thiếu nước";
                 //* */
                 boolean isNotified = notificationRepository.existsByDeviceIdAndTitleAndCreatedAtAfter(
-                plantUser.getDevice().getId(), title, LocalDateTime.now().minusMinutes(30));
+                plantUser.getDevice().getId(), title, LocalDateTime.now().minusMinutes(10));
                 if(!isNotified) {
                     //* */
                     saveNotification(plantUser, title, "Đất tại '" + plantUser.getCustomName() + "' đang khô (" + currentMoisturePercent + "%). Hãy tưới cây!");

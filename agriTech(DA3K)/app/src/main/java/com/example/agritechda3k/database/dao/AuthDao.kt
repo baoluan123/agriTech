@@ -15,4 +15,7 @@ interface AuthDao {
 
     @Query("DELETE FROM auths")
     suspend fun clearAuth()
+    // Lấy ID của tài khoản đang đăng nhập (giả sử bạn lưu trạng thái isLoggedIn)
+    @Query("SELECT id FROM auths")
+    suspend fun getLoggedInId(): Long?
 }

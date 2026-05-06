@@ -12,6 +12,9 @@ class AuthRepository(private val api: AuthApi,private val dao: AuthDao) {
             val response = api.login(LoginRequestDTO(username,password))
             if(response.isSuccessful && response.body() != null){
                 val loginResponse = response.body()!!
+                if(loginResponse.role != 0) {
+                    return Result.failure(Exception("Tài khoản Admin không thể đăng nhập vào ứng dụng di động!"))
+                }
                 if(loginResponse.message?.contains("thành công") == true){
                     val authEntity = loginResponse.toEntityAuth()
                     dao.insertAuth(authEntity)

@@ -1,8 +1,10 @@
 package com.example.agriTech.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.example.agriTech.model.Account;
@@ -16,4 +18,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     // Nếu bạn muốn tìm nhanh bằng ID của Account mà không cần truyền nguyên Object
     Optional<User> findByAccountId(Long accountId);
+
+    @Query("SELECT u FROM User u WHERE u.account.role = 0")
+    List<User> findAllClients();
 }

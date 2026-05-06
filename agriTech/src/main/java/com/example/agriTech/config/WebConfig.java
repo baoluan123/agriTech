@@ -2,6 +2,7 @@ package com.example.agriTech.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -12,5 +13,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins("*") // Cho phép tất cả các nguồn (Mobile, Web, Postman)
                 .allowedMethods("POST","GET","PUT","DELETE", "OPTIONS")
                 .allowedHeaders("*");
+    }
+    //class để "chỉ đường" cho Spring biết thư mục resources đó chứa file tĩnh.
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/resources/**")
+                .addResourceLocations("/resources/");
     }
 }

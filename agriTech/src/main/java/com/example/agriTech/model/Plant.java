@@ -33,6 +33,9 @@ public class Plant {
     private String fertilizerInfo;
     @Column(name = "description_plant")
     private String descriptionPlant;
+
+    // THÊM CÁI NÀY ĐỂ LÀM ẢNH CHO NHANH
+    private String thumbnailUrl = "https://via.placeholder.com/150?text=AgriTech";
     @JsonManagedReference
     @OneToMany(mappedBy = "plant",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Img> images;

@@ -14,4 +14,7 @@ public class LoginResponseDTO {
     private String phone;    // Thêm cái này
     private String address;  // Thêm cái này
     
+
+    // Trường của Admin
+    private Integer levelAdmin;
 }

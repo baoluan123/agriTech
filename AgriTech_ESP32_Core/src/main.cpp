@@ -9,7 +9,7 @@
 #include <DHT.h>
 const char* ssid = "P325-2";
 const char* pass = "@123456789";
-const char* ip = "http://192.168.1.3:8080/api/sensor/moisture";
+const char* ip = "http://192.168.1.13:8080/api/sensor/moisture";
 // Cấu hình OLED
 #define SCreen_Width 128
 #define SCreen_Height 64
