@@ -52,4 +52,8 @@ class PlantUserRepository(private val plantUserDao: PlantUserDao, private val pl
        Nhưng hiện tại cứ trả trực tiếp từ API cho nhanh và nhẹ đầu.
     */
 
+    suspend fun postTriggerBuzzer(): Response<Void> {
+       return plantUserApi.triggerBuzzer()
+    }
+
 }

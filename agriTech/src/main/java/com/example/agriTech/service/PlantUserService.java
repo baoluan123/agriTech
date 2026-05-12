@@ -59,6 +59,7 @@ public class PlantUserService {
         if(device == null) {
             throw new RuntimeException("Thiết bị này chưa được đăng ký trong hệ thống!");
         }
+         
         // 2. Tạo Entity và gán dữ liệu
         PlantUser plantUser = new PlantUser();
         plantUser.setPlant(plant);

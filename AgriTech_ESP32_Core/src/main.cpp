@@ -9,7 +9,7 @@
 #include <DHT.h>
 const char* ssid = "P325-2";
 const char* pass = "@123456789";
-const char* ip = "http://192.168.1.13:8080/api/sensor/moisture";
+const char* ip = "http://172.20.10.9:8080/api/sensor/moisture";
 // Cấu hình OLED
 #define SCreen_Width 128
 #define SCreen_Height 64
@@ -24,10 +24,17 @@ DHT dht(DHTPIN, DHTTYPE);
 const int pinAnalog = 34; //A0
 const int pinDigital = 25;//D0
 
+// Cấu hình Còi (Buzzer) - Chân D12
+const int pinBuzzer = 4;
+
 
 
 void setup() {
   Serial.begin(115200);
+
+  //// Khởi tạo Còi
+  pinMode(pinBuzzer,OUTPUT);
+  digitalWrite(pinBuzzer, HIGH); // Tắt còi lúc mới khởi động
   // Khởi tạo DHT11
   dht.begin();
   // Khởi tạo OLED
@@ -56,8 +63,23 @@ void loop() {
   float hum = dht.readHumidity();
   int soilValue = analogRead(pinAnalog); // cảm bien do am anlog digiatla
   int soilDigital = digitalRead(pinDigital);
-  String soilStat = (soilDigital == HIGH) ? "KHO" : "UOT";
+  String soilStat;
+  // if(soilDigital== HIGH) {
+  //    soilStat = "KHO";
+  //    for(int i =0;i<3;i++) {
+  //     digitalWrite(pinBuzzer, LOW); // Bật còi
+  //     delay(500);
+  //     digitalWrite(pinBuzzer,HIGH);
+  //     delay(500);
+  //    }
+     
+     
+  //   // tone(pinBuzzer, 1000); // Phát tiếng kêu tần số 1000Hz
+  // } else {
+  //   soilStat = "UOT";
 
+  //   digitalWrite(pinBuzzer,HIGH);
+  // }
   // 2. Hiển thị lên màn hình OLED
   display.clearDisplay();
   display.setTextSize(1);
@@ -71,6 +93,9 @@ void loop() {
   display.printf("Humi: %.1f %%\n", hum);
   display.printf("Soil: %d\n", soilValue);
   display.printf("Stat: %s\n", soilStat.c_str());
+  // Thêm dòng trạng thái còi lên OLED để dễ quan sát
+  display.setCursor(0, 55);
+  display.print(soilDigital == HIGH ? "(!) DANGER: DRY" : "SYSTEM OK");
   display.display();
 
   // 3. Gửi dữ liệu qua Spring Boot (JSON)
@@ -100,8 +125,22 @@ void loop() {
   int HttpResponse = Client.POST(requestBody);
   if (HttpResponse > 0) {
       Serial.printf("Gửi thành công, Code: %d\n", HttpResponse);
+      // Đọc phản hồi từ Spring Boot
+      String responseBody = Client.getString();
+      Serial.print("Lệnh từ Server: ");
+      Serial.println(responseBody);
+      if(responseBody == "BIP_3_LAN") {
+           for(int i =0;i<3;i++) {
+      digitalWrite(pinBuzzer, LOW); // Bật còi
+      delay(500);
+      digitalWrite(pinBuzzer,HIGH);
+      delay(500);
+     }
+
+      }
     } else {
       Serial.printf("Lỗi gửi dữ liệu: %s\n",Client.errorToString(HttpResponse).c_str());
+      
     }
     Client.end();
 
@@ -110,7 +149,7 @@ void loop() {
     Serial.println("Mat ket noi Wifi, dang thu lai...");
     WiFi.begin(ssid, pass);
   }
-  delay(10000);
+  delay(5000);
 
 }
 

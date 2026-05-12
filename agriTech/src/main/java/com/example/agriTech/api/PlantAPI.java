@@ -50,4 +50,5 @@ public class PlantAPI {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+    
 }

@@ -63,9 +63,14 @@ class MyPlantDetailFragment : Fragment() {
                 }
             }
 
+        //--
         binding.btnWaterNow.setOnClickListener {
             // Sau này ông sẽ gọi viewModel.updateWatering(selectedId) ở đây
-            android.widget.Toast.makeText(requireContext(), "Hệ thống đã ghi nhận bạn vừa tưới cây!", android.widget.Toast.LENGTH_SHORT).show()
+//            android.widget.Toast.makeText(requireContext(), "Hệ thống đã ghi nhận bạn vừa tưới cây!", android.widget.Toast.LENGTH_SHORT).show()
+            viewModel.triggerBuzzer();
+        }
+        viewModel.controlStatus.observe(viewLifecycleOwner) {
+            message->android.widget.Toast.makeText(requireContext(), message, android.widget.Toast.LENGTH_SHORT).show()
         }
         // 2. PHẢI ĐƯA LỆNH CHUYỂN TRANG VÀO ĐÂY (Nút chuông/Nút lịch sử)
         binding.btnGoToHistory.setOnClickListener {

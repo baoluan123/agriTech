@@ -68,8 +68,12 @@ class PlantRepository(private val plantDao: PlantDao, private val plantApi: Plan
             )
             // 3. NHIỆM VỤ 1: Gửi sang Spring Boot
             val response = plantApi.savePlantUser(requestDTO)
+            Log.d("PLANT_REPO", "Đã cập nhật ${response} vào Room")
             if (response.isSuccessful && response.body() != null) {
+                Log.d("PLANT_REPO", "Đã cập nhật ${response} vào Room")
                 val savedDTO = response.body()!!
+
+
 
                 // 4. MAPPING: Chuyển DTO đầy đủ (có tên cây, ảnh) từ Server về Entity
                 val entity = savedDTO.toEntitys()

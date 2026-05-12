@@ -2,8 +2,10 @@ package com.example.agritechda3k.api.service
 
 import com.example.agritechda3k.api.dto.PlantUserDTO
 import com.example.agritechda3k.api.dto.SensorDTO
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -22,4 +24,7 @@ interface PlantUserApi {
 //sensor
     @GET("sensor/history/{deviceId}")
     suspend fun getSensorHistory(@Path("deviceId") deviceId: Long, @Query("limit") limit: Int): Response<List<SensorDTO>>
+
+    @POST("sensor/trigger-buzzer")
+    suspend fun triggerBuzzer(): Call<Void>
 }

@@ -39,7 +39,7 @@ class AddPlantBottomSheet(
         super.onViewCreated(view, savedInstanceState)
         binding.tvPlantName.text = "Cây: ${plant.namePlant}"
         // Giả lập danh sách Device (Sau này ông gọi API lấy list Device rảnh về đây)
-        val devices = listOf("ESP32_GARDEN_01", "ESP32_GARDEN_02")
+        val devices = listOf("ESP32_GARDEN_01", "ESP32_AGRI_02","ESP32_AGRI_03","ESP32_AGRI_04")
         val adapters = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, devices)
         binding.spinnerDevices.adapter = adapters
 

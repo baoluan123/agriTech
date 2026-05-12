@@ -22,6 +22,7 @@ import com.example.agriTech.service.SensorService;
 @RestController
 @RequestMapping("/api/sensor")
 public class SensorAPI {
+    private boolean isBuzzerRequested = false; // Biến tạm lưu trạng thái bấm từ App
     private final SensorService sensorService;
     public SensorAPI(SensorService sensorService) {
         this.sensorService  = sensorService;
@@ -50,8 +51,19 @@ public class SensorAPI {
         // System.out.println("Giá trị độ ẩm đất: " + data.get("soilMoisture"));
         // System.out.println("Trạng thái: " + data.get("status"));
         this.sensorService.processData(data);
+        // Kiểm tra xem App Kotlin có vừa bấm nút không
+        if(isBuzzerRequested) {
+            isBuzzerRequested = false; // Reset sau khi gửi lệnh đi
+        return ResponseEntity.ok("BIP_3_LAN");
+        }
         return ResponseEntity.ok("Server VKU đã nhận dữ liệu!");
 
+    }
+
+    @PostMapping("/trigger-buzzer")
+    public ResponseEntity<Void> trigger() {
+        this.isBuzzerRequested = true;
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/history/{deviceId}")

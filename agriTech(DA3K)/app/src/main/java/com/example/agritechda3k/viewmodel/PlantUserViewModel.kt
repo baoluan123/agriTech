@@ -10,6 +10,7 @@ import com.example.agritechda3k.api.HT.SensorPoint
 import com.example.agritechda3k.database.repository.PlantUserRepository
 import com.example.agritechda3k.mapper.Notification.toSensorPoint
 import com.example.agritechda3k.model.PlantUser
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PlantUserViewModel(private val repository: PlantUserRepository) : ViewModel() {
@@ -60,6 +61,24 @@ class PlantUserViewModel(private val repository: PlantUserRepository) : ViewMode
             }
         }
 
+    }
+    // LiveData để Fragment quan sát trạng thái gửi lệnh
+    private val _controlStatus = MutableLiveData<String>()
+    val controlStatus: LiveData<String> get() = _controlStatus
+    fun triggerBuzzer() {
+        viewModelScope.launch(Dispatchers.IO){
+            try {
+                // Gọi tới Repository để thực hiện POST api/trigger-buzzer
+                val response = repository.postTriggerBuzzer()
+                if (response.isSuccessful) {
+                    _controlStatus.postValue("Lệnh đã được gửi tới hệ thống!")
+                } else {
+                    _controlStatus.postValue("Server lỗi: ${response.code()}")
+                }
+            }catch (e: Exception) {
+                _controlStatus.postValue("Lỗi kết nối: ${e.message}")
+            }
+        }
     }
 
 }
