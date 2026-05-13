@@ -55,7 +55,7 @@ public class SensorService {
             checkAndAction(dto);
         }
         // 4. LƯU LỊCH SỬ (Giãn cách 5 phút để SQL không bị quá tải)
-        if(LocalDateTime.now().isAfter(lastLogTime.plusMinutes(20))) {
+        if(LocalDateTime.now().isAfter(lastLogTime.plusMinutes(1))) {
             //mapping sau
             Sensor log = new Sensor();
             log.setDevice(device);
@@ -103,7 +103,7 @@ public class SensorService {
                 String title = "Cảnh báo thiếu nước";
                 //* */
                 boolean isNotified = notificationRepository.existsByDeviceIdAndTitleAndCreatedAtAfter(
-                plantUser.getDevice().getId(), title, LocalDateTime.now().minusMinutes(10));
+                plantUser.getDevice().getId(), title, LocalDateTime.now().minusMinutes(2));
                 if(!isNotified) {
                     //* */
                     saveNotification(plantUser, title, "Đất tại '" + plantUser.getCustomName() + "' đang khô (" + currentMoisturePercent + "%). Hãy tưới cây!");

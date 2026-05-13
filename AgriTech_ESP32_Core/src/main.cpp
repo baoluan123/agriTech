@@ -9,7 +9,7 @@
 #include <DHT.h>
 const char* ssid = "P325-2";
 const char* pass = "@123456789";
-const char* ip = "http://172.20.10.9:8080/api/sensor/moisture";
+const char* ip = "http://192.168.1.14:8080/api/sensor/moisture";
 // Cấu hình OLED
 #define SCreen_Width 128
 #define SCreen_Height 64
@@ -64,22 +64,22 @@ void loop() {
   int soilValue = analogRead(pinAnalog); // cảm bien do am anlog digiatla
   int soilDigital = digitalRead(pinDigital);
   String soilStat;
-  // if(soilDigital== HIGH) {
-  //    soilStat = "KHO";
-  //    for(int i =0;i<3;i++) {
-  //     digitalWrite(pinBuzzer, LOW); // Bật còi
-  //     delay(500);
-  //     digitalWrite(pinBuzzer,HIGH);
-  //     delay(500);
-  //    }
+  if(soilDigital== HIGH) {
+     soilStat = "KHO";
+     for(int i =0;i<3;i++) {
+      digitalWrite(pinBuzzer, LOW); // Bật còi
+      delay(500);
+      digitalWrite(pinBuzzer,HIGH);
+      delay(500);
+     }
      
      
-  //   // tone(pinBuzzer, 1000); // Phát tiếng kêu tần số 1000Hz
-  // } else {
-  //   soilStat = "UOT";
+     // tone(pinBuzzer, 1000); // Phát tiếng kêu tần số 1000Hz
+   } else {
+    soilStat = "UOT";
 
-  //   digitalWrite(pinBuzzer,HIGH);
-  // }
+    digitalWrite(pinBuzzer,HIGH);
+  }
   // 2. Hiển thị lên màn hình OLED
   display.clearDisplay();
   display.setTextSize(1);

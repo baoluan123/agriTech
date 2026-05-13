@@ -23,7 +23,7 @@ class MyPlantDetailFragment : Fragment() {
     private  val updateDataRunnable = object : Runnable {
         override fun run() {
             fetchSensorData() // Hàm gọi API lấy dữ liệu mới
-            handler.postDelayed(this, 5 * 60 * 1000) // 5 phút (ms)
+            handler.postDelayed(this, 1 * 60 * 1000) // 5 phút (ms)
         }
     }
     // Dùng chung ViewModel với Activity để lấy được selectedMyPlantId
@@ -101,7 +101,7 @@ class MyPlantDetailFragment : Fragment() {
     private fun fetchSensorData() {
         val selectId = viewModel.selectedMyPlantId
         if (selectId != -1L) {
-            viewModel.fetchSensorData(selectId, 20)
+            viewModel.fetchSensorData(selectId, 10)
         }
 
         viewModel.sensorPoints.observe(viewLifecycleOwner) { points ->

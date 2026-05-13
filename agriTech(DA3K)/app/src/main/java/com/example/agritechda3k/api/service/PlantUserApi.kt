@@ -26,5 +26,5 @@ interface PlantUserApi {
     suspend fun getSensorHistory(@Path("deviceId") deviceId: Long, @Query("limit") limit: Int): Response<List<SensorDTO>>
 
     @POST("sensor/trigger-buzzer")
-    suspend fun triggerBuzzer(): Call<Void>
+    suspend fun triggerBuzzer(): Response<Void>
 }
