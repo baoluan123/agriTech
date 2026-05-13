@@ -22,6 +22,13 @@ class PlantRepository(private val plantDao: PlantDao, private val plantApi: Plan
             if (response.isSuccessful) {
                 // Dùng let để check null an toàn
                 response.body()?.toEntityList()?.let { entities ->
+                    // === THÊM VÀI DÒNG NÀY VÔ ===
+                    val localIds = plantDao.getAllPlantIds() // 1. Lấy hết ID đang có ở máy
+                    val serverIds = entities.map { it.id } // 2. Lấy list ID mới từ Server
+                    val idsToDelete = localIds.filter { it !in serverIds } // 3. Lọc ra cái nào Server đã xóa
+                    if (idsToDelete.isNotEmpty()) {
+                        plantDao.deletePlantsByIds(idsToDelete) // 4. Xóa nó đi
+                    }
                     // Lúc này 'entities' chắc chắn không null, truyền vào thoải mái
                     plantDao.addPlant(entities)
                     Log.d("PLANT_REPO", "Đã cập nhật ${entities.size} cây vào Room")
